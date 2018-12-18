@@ -1,4 +1,4 @@
-// Package time is a service package providing
+// Package timebot is a service package providing
 // helper functions neeeded for time conversions
 package timebot
 
