@@ -1,8 +1,6 @@
 language: go
 go:
   - "1.x"
-  - master
-
 
 # Anything in before_script that returns a nonzero exit code will flunk the
 # build and immediately stop. It's sorta like having set -e enabled in bash.
