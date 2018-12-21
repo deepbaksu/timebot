@@ -9,6 +9,11 @@ Slack 시간 변환 봇
 
 14:24 PST <--> 07:24 KST
 
+## Run the server
+
+```go
+go run cmd/server/server.go
+```
 
 ## Test
 
