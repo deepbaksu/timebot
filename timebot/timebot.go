@@ -3,9 +3,8 @@
 package timebot
 
 import (
-	"fmt"
-	"time"
 	"strings"
+	"time"
 )
 
 // ParseTime takes a string and returns time.Time in time.UTC
@@ -14,13 +13,10 @@ func ParseTime(text string) (time.Time, bool) {
 
 	text = strings.Replace(text, "PST", "-0800", 1)
 	text = strings.Replace(text, "KST", "+0900", 1)
-	
-	isParsed := true
+
 	t, err := time.Parse(longForm, text)
 	if err != nil {
-		fmt.Println(err)
-		isParsed = false
+		return t, false
 	}
-	t = t.UTC()
-	return t, isParsed
+	return t.UTC(), true
 }
