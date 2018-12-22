@@ -1,6 +1,7 @@
 package slack
 
 import (
+	"log"
 	"net/http"
 )
 
@@ -8,5 +9,5 @@ import (
 //
 // ENDPOINT /api/slack/command
 func CommandHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("NOT IMPLEMENTED"))
+	log.Fatalln(w.Write([]byte("NOT IMPLEMENTED")))
 }
