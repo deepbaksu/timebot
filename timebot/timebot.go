@@ -3,25 +3,63 @@
 package timebot
 
 import (
-	"strings"
+	"errors"
+	"fmt"
+	s "strings"
 	"time"
 )
 
-// ParseTime takes a string and returns time.Time in time.UTC
-//
-// FIXME: Currently, it doesn't validate PST/PDT
-func ParseTime(text string) (time.Time, bool) {
-	const longForm = "2006-01-02 15:04 -0700"
+func CheckDaylightSavingZone(text string) (daylightSavingZone bool) {
 
-	text = strings.Replace(text, "PST", "-0800", 1)
-	text = strings.Replace(text, "PDT", "-0700", 1)
-	text = strings.Replace(text, "KST", "+0900", 1)
-	t, err := time.Parse(longForm, text)
-
-	if err != nil {
-		return t, false
+	tzDb := map[string]string{
+		"PST": "America/Los_Angeles",
+		"PDT": "America/Los_Angeles",
 	}
 
+	var tzText string
+
+	for k, v := range tzDb {
+		if s.Contains(text, k) {
+			tzText = v
+		}
+	}
+	if tzText == "" {
+		return true
+	}
+
+	const longForm2 = "2006-01-02 15:04 MST"
+	loc, err := time.LoadLocation(tzText)
+	if err != nil {
+		fmt.Println("wrong tzDb")
+	}
+
+	t, _ := time.ParseInLocation(longForm2, text, loc)
+	tString := t.Format("2006-01-02 15:04 MST")
+	fmt.Printf("input text: %s, ParseInLocation: %s\n", text, tString)
+	return text == tString
+}
+
+func ParseTime(text string) (time.Time, bool) {
+
+	tzToTimeGap := map[string]string{
+		"PST": "-0800",
+		"PDT": "-0700",
+		"KST": "+0900",
+	}
+
+	passCheck := CheckDaylightSavingZone(text)
+	fmt.Println("passCheck", passCheck)
+
+	const longForm = "2006-01-02 15:04 -0700"
+
+	for key, value := range tzToTimeGap {
+		text = s.Replace(text, key, value, 1)
+	}
+
+	t, err := time.Parse(longForm, text)
+	if err != nil || !passCheck {
+		return t, false
+	}
 	return t.UTC(), true
 }
 
@@ -31,5 +69,30 @@ func ParseTime(text string) (time.Time, bool) {
 //
 // 1. KST <-> PST/PDT
 func ParseAndFlipTz(text string) (string, error) {
-	return "", nil
+	tzFlipDb := map[string]string{
+		"PST": "Asia/Seoul",
+		"PDT": "Asia/Seoul",
+		"KST": "America/Los_Angeles",
+	}
+
+	var flipTz string
+
+	for k, v := range tzFlipDb {
+		if s.Contains(text, k) {
+			flipTz = v
+		}
+	}
+
+	loc, err := time.LoadLocation(flipTz)
+	if err != nil {
+		return text, nil // TODO: send error
+	}
+
+	utc, ok := ParseTime(text)
+	if !ok {
+		return utc.String(), errors.New("fail to ParseTime()")
+	}
+
+	tString := utc.In(loc).Format("2006-01-02 15:04 MST")
+	return tString, nil
 }
