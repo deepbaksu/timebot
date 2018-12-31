@@ -112,7 +112,6 @@ func TestParseAndFlipTz(t *testing.T) {
 	//////////////////////////////////
 	// REMOVE THIS LINE
 	//////////////////////////////////
-	// t.Skip("[TEST SKIP] PLEASE REMOVE THIS")
 
 	for _, testCase := range testCases {
 		ret, err := ParseAndFlipTz(testCase.input)
