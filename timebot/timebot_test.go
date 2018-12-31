@@ -45,9 +45,6 @@ func TestParseTime(t *testing.T) {
 		},
 	}
 
-	//////////////////////////////////
-	// REMOVE THIS LINE
-	//////////////////////////////////
 	for _, testCase := range testCasesParseTime {
 
 		output, ok := ParseTime(testCase.input)
