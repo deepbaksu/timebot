@@ -3,25 +3,56 @@
 package timebot
 
 import (
-	"strings"
+	s "strings"
 	"time"
 )
 
-// ParseTime takes a string and returns time.Time in time.UTC
-//
-// FIXME: Currently, it doesn't validate PST/PDT
-func ParseTime(text string) (time.Time, bool) {
-	const longForm = "2006-01-02 15:04 -0700"
+func CheckDaylightSavingZone(text string) (daylightSavingZone bool) {
 
-	text = strings.Replace(text, "PST", "-0800", 1)
-	text = strings.Replace(text, "PDT", "-0700", 1)
-	text = strings.Replace(text, "KST", "+0900", 1)
-	t, err := time.Parse(longForm, text)
-
-	if err != nil {
-		return t, false
+	tzDb := map[string]string{
+		"PST": "America/Los_Angeles",
+		"PDT": "America/Los_Angeles",
 	}
 
+	tzText := ""
+
+	for k, v := range tzDb {
+		if s.Contains(text, k) {
+			tzText = v
+		}
+	}
+	if tzText == "" {
+		return true
+	}
+
+	const longForm2 = "2006-01-02 15:04 MST"
+	loc, _ := time.LoadLocation(tzText)
+
+	t, _ := time.ParseInLocation(longForm2, text, loc)
+	tString := t.Format("2006-01-02 15:04 MST")
+	return text == tString
+}
+
+func ParseTime(text string) (time.Time, bool) {
+
+	tzToTimeGap := map[string]string{
+		"PST": "-0800",
+		"PDT": "-0700",
+		"KST": "+0900",
+	}
+
+	passCheck := CheckDaylightSavingZone(text)
+
+	const longForm = "2006-01-02 15:04 -0700"
+
+	for key, value := range tzToTimeGap {
+		text = s.Replace(text, key, value, 1)
+	}
+
+	t, err := time.Parse(longForm, text)
+	if err != nil || !passCheck {
+		return t, false
+	}
 	return t.UTC(), true
 }
 
