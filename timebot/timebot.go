@@ -4,8 +4,6 @@ package timebot
 
 import (
 	"errors"
-	"fmt"
-
 	s "strings"
 	"time"
 )
