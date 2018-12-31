@@ -46,7 +46,6 @@ func ParseTime(text string) (time.Time, bool) {
 	}
 
 	passCheck := CheckDaylightSavingZone(text)
-	fmt.Println("passCheck", passCheck)
 
 	const longForm = "2006-01-02 15:04 -0700"
 
