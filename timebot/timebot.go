@@ -5,6 +5,7 @@ package timebot
 import (
 	"errors"
 	"fmt"
+
 	s "strings"
 	"time"
 )
@@ -16,8 +17,7 @@ func CheckDaylightSavingZone(text string) (daylightSavingZone bool) {
 		"PDT": "America/Los_Angeles",
 	}
 
-	var tzText string
-
+	tzText := ""
 	for k, v := range tzDb {
 		if s.Contains(text, k) {
 			tzText = v
@@ -28,14 +28,11 @@ func CheckDaylightSavingZone(text string) (daylightSavingZone bool) {
 	}
 
 	const longForm2 = "2006-01-02 15:04 MST"
-	loc, err := time.LoadLocation(tzText)
-	if err != nil {
-		fmt.Println("wrong tzDb")
-	}
+	loc, _ := time.LoadLocation(tzText)
 
 	t, _ := time.ParseInLocation(longForm2, text, loc)
 	tString := t.Format("2006-01-02 15:04 MST")
-	fmt.Printf("input text: %s, ParseInLocation: %s\n", text, tString)
+
 	return text == tString
 }
 
@@ -48,7 +45,6 @@ func ParseTime(text string) (time.Time, bool) {
 	}
 
 	passCheck := CheckDaylightSavingZone(text)
-	fmt.Println("passCheck", passCheck)
 
 	const longForm = "2006-01-02 15:04 -0700"
 
