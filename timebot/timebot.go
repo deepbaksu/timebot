@@ -3,6 +3,7 @@
 package timebot
 
 import (
+	"errors"
 	s "strings"
 	"time"
 )
@@ -15,7 +16,6 @@ func CheckDaylightSavingZone(text string) (daylightSavingZone bool) {
 	}
 
 	tzText := ""
-
 	for k, v := range tzDb {
 		if s.Contains(text, k) {
 			tzText = v
@@ -30,6 +30,7 @@ func CheckDaylightSavingZone(text string) (daylightSavingZone bool) {
 
 	t, _ := time.ParseInLocation(longForm2, text, loc)
 	tString := t.Format("2006-01-02 15:04 MST")
+
 	return text == tString
 }
 
@@ -62,5 +63,30 @@ func ParseTime(text string) (time.Time, bool) {
 //
 // 1. KST <-> PST/PDT
 func ParseAndFlipTz(text string) (string, error) {
-	return "", nil
+	tzFlipDb := map[string]string{
+		"PST": "Asia/Seoul",
+		"PDT": "Asia/Seoul",
+		"KST": "America/Los_Angeles",
+	}
+
+	var flipTz string
+
+	for k, v := range tzFlipDb {
+		if s.Contains(text, k) {
+			flipTz = v
+		}
+	}
+
+	loc, err := time.LoadLocation(flipTz)
+	if err != nil {
+		return text, nil // TODO: send error
+	}
+
+	utc, ok := ParseTime(text)
+	if !ok {
+		return utc.String(), errors.New("fail to ParseTime()")
+	}
+
+	tString := utc.In(loc).Format("2006-01-02 15:04 MST")
+	return tString, nil
 }
