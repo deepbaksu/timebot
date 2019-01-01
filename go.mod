@@ -1,9 +1,10 @@
 // +heroku goVersion go1.11
 // +heroku install ./cmd/...
 
-module github.com/dl4b/timebot/timebot
+module github.com/dl4b/timebot
 
 require (
-	github.com/dl4b/timebot v0.0.0-20181231194503-6dd310b91331
+	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2
+	golang.org/x/sys v0.0.0-20181228144115-9a3f9b0469bb // indirect
 )
