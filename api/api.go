@@ -1,7 +1,7 @@
 package api
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -18,5 +18,5 @@ func GetRouter() *mux.Router {
 }
 
 func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
-	log.Fatalln(w.Write([]byte("ok")))
+	fmt.Fprint(w, "ok")
 }

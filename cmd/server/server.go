@@ -14,8 +14,6 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	log.Printf("The server is running at 0.0.0.0:%v\n", port)
-
-	r := api.GetRouter()
-	log.Fatalln(http.ListenAndServe(":"+port, r))
+	log.Printf("[MAIN] The server is running at 0.0.0.0:%v\n", port)
+	log.Println("[MAIN]", http.ListenAndServe(":"+port, api.GetRouter()))
 }
