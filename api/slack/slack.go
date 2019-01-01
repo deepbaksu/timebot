@@ -3,6 +3,7 @@ package slack
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/dl4b/timebot/timebot"
@@ -42,5 +43,9 @@ func CommandHandler(w http.ResponseWriter, r *http.Request) {
 		ResponseType: InChannel,
 	}
 
-	json.NewEncoder(w).Encode(resp)
+	err = json.NewEncoder(w).Encode(resp)
+
+	if err != nil {
+		log.Printf("Unable to encode %v\n", resp)
+	}
 }

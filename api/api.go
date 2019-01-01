@@ -18,5 +18,9 @@ func GetRouter() *mux.Router {
 }
 
 func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
-	log.Fatalln(w.Write([]byte("ok")))
+	_, err := w.Write([]byte("ok"))
+
+	if err != nil {
+		log.Println("Unable to healthcheck ok")
+	}
 }
