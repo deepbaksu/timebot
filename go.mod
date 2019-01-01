@@ -1,3 +1,6 @@
+// +heroku goVersion go1.11
+// +heroku install ./cmd/...
+
 module github.com/dl4b/timebot
 
 require (
