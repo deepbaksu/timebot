@@ -43,6 +43,7 @@ func CommandHandler(w http.ResponseWriter, r *http.Request) {
 		ResponseType: InChannel,
 	}
 
+	w.Header().Add("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(resp)
 
 	if err != nil {
