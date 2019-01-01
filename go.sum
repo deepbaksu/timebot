@@ -1,3 +1,5 @@
+github.com/dl4b/timebot v0.0.0-20181231194503-6dd310b91331 h1:kxmaGSm+IChg6tsKcrEfCuC3eiHxekzIEsiLrtL+EwI=
+github.com/dl4b/timebot v0.0.0-20181231194503-6dd310b91331/go.mod h1:pbEXnBBKaDwcp8HRVCfRv24BB9GQy9U4Ge8SxqSWv9c=
 github.com/google/pprof v0.0.0-20181206194817-3ea8567a2e57 h1:eqyIo2HjKhKe/mJzTG8n4VqvLXIOEG+SLdDqX7xGtkY=
 github.com/google/pprof v0.0.0-20181206194817-3ea8567a2e57/go.mod h1:zfwlbNMJ+OItoe0UupaVj+oy1omPYYDuagoSzA8v9mc=
 github.com/gorilla/mux v1.6.2 h1:Pgr17XVTNXAk3q/r4CpKzC5xBM/qW1uVLV+IhRZpIIk=
