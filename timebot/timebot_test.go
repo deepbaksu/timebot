@@ -5,6 +5,28 @@ import (
 	"time"
 )
 
+func TestCheckDaylightSavingZone(t *testing.T) {
+	testCases := []struct {
+		input    string
+		expected bool
+	}{
+		{"", true},
+		{"2018-12-30 11:30 KST", true},
+		{"2018-12-30 11:11 PDT", false},
+	}
+
+	for _, testCase := range testCases {
+		output := CheckDaylightSavingZone(testCase.input)
+		if output != testCase.expected {
+			t.Fatalf(`
+Expected
+  %v
+But received
+  %v`, testCase.expected, output)
+		}
+	}
+}
+
 func TestParseTime(t *testing.T) {
 	/////////////////////////////////
 	// TEST CASES
