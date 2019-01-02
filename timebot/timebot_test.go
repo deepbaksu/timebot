@@ -108,6 +108,10 @@ func TestParseAndFlipTz(t *testing.T) {
 			input: "2018-08-13 19:34 PST",
 			ok:    false,
 		},
+		{
+			input: "no date time",
+			ok:    false,
+		},
 	}
 	//////////////////////////////////
 	// REMOVE THIS LINE
