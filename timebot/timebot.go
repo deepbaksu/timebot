@@ -4,6 +4,7 @@ package timebot
 
 import (
 	"errors"
+	"fmt"
 	s "strings"
 	"time"
 )
@@ -57,36 +58,36 @@ func ParseTime(text string) (time.Time, bool) {
 	return t.UTC(), true
 }
 
+//nolint:gochecknoglobals
+var (
+	koTz, _ = time.LoadLocation("Asia/Seoul")
+	caTz, _ = time.LoadLocation("America/Los_Angeles")
+)
+
 // ParseAndFlipTz returns a datetime string but in other TZ
 //
 // The following conversions are supported as of now:
 //
 // 1. KST <-> PST/PDT
 func ParseAndFlipTz(text string) (string, error) {
-	tzFlipDb := map[string]string{
-		"PST": "Asia/Seoul",
-		"PDT": "Asia/Seoul",
-		"KST": "America/Los_Angeles",
+	tzFlipDb := map[string]*time.Location{
+		"PST": koTz,
+		"PDT": koTz,
+		"KST": caTz,
 	}
 
-	var flipTz string
+	for tzText, tz := range tzFlipDb {
+		if s.Contains(text, tzText) {
+			utc, ok := ParseTime(text)
 
-	for k, v := range tzFlipDb {
-		if s.Contains(text, k) {
-			flipTz = v
+			if !ok {
+				return utc.String(), errors.New("fail to ParseTime()")
+			}
+
+			tString := utc.In(tz).Format("2006-01-02 15:04 MST")
+			return tString, nil
 		}
 	}
 
-	loc, err := time.LoadLocation(flipTz)
-	if err != nil {
-		return text, nil // TODO: send error
-	}
-
-	utc, ok := ParseTime(text)
-	if !ok {
-		return utc.String(), errors.New("fail to ParseTime()")
-	}
-
-	tString := utc.In(loc).Format("2006-01-02 15:04 MST")
-	return tString, nil
+	return "", fmt.Errorf("%v does not contain PST/PDT/KST", text)
 }

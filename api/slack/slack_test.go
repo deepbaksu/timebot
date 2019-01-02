@@ -33,3 +33,62 @@ func TestBasicRequest(t *testing.T) {
 		t.Fatalf("\nExpected:\n%s\nReceived:\n%s", expected, rr.Body.String())
 	}
 }
+
+func must(req *http.Request, err error) *http.Request {
+	return req
+}
+
+func TestBadRequest(t *testing.T) {
+	testCases := []struct {
+		request *http.Request
+	}{
+		{
+			// no body
+			request: must(http.NewRequest("POST", "/api/slack/command", nil)),
+		},
+		{
+			// no "text" property
+			request: must(http.NewRequest("POST", "/api/slack/command", bytes.NewBufferString(""))),
+		},
+	}
+
+	req, _ := http.NewRequest("POST", "/api/slack/command", nil)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	for _, testCase := range testCases {
+		req = testCase.request
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(CommandHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusBadRequest {
+			t.Fatalf("Expected a bad request but received %v", rr.Code)
+		}
+	}
+
+}
+
+func TestInvalidDateFormat(t *testing.T) {
+	body := `text="not a date"`
+	req, _ := http.NewRequest("POST", "/api/slack/command", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(CommandHandler)
+
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("Expected a StatusOK but received %v", rr.Code)
+	}
+
+	expected := `"not a date" is not a valid date time: "not a date" does not contain PST/PDT/KST`
+	if rr.Body.String() != expected {
+		t.Fatalf(`
+Expected
+  %v
+but received
+  %v`, expected, rr.Body)
+	}
+}
