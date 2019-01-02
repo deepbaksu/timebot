@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/dl4b/timebot/api"
+	"github.com/dl4ab/timebot/api"
 )
 
 func main() {
