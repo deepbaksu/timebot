@@ -65,6 +65,11 @@ func TestParseTime(t *testing.T) {
 			input: "2018-08-13 19:34 PST",
 			ok:    false,
 		},
+		{
+			// invalid date should return false
+			input: "invalid date",
+			ok:    false,
+		},
 	}
 
 	for _, testCase := range testCasesParseTime {
