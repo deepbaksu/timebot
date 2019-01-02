@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dl4b/timebot/timebot"
+	"github.com/dl4ab/timebot/timebot"
 )
 
 // CommandHandler handles slack slash command
