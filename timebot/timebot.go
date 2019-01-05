@@ -5,6 +5,7 @@ package timebot
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	s "strings"
 	"time"
 )
@@ -90,4 +91,19 @@ func ParseAndFlipTz(text string) (string, error) {
 	}
 
 	return "", fmt.Errorf("%v does not contain PST/PDT/KST", text)
+}
+
+// Regex for 2006-01-02 15:04 MST
+// nolint:gochecknoglobals
+var datetimeRegex = regexp.MustCompile(`\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}\s[A-z]{3}`)
+
+// ExtractDateTime extracts DateTime from 'text'
+func ExtractDateTime(text string) (string, error) {
+	find := datetimeRegex.FindString(text)
+
+	if find != "" {
+		return find, nil
+	}
+
+	return "", errors.New("text does not contain valid date time format (e.g., 2006-01-02 15:04 MST)")
 }
