@@ -166,3 +166,77 @@ func TestParseAndFlipTz(t *testing.T) {
 		}
 	}
 }
+
+func TestExtractDateTime(t *testing.T) {
+	testCases := []struct {
+		input    string
+		expected string
+		err      bool
+	}{
+		{
+			input:    "이번 미팅은 2019-01-04 21:51 KST 에 하겠습니다",
+			expected: "2019-01-04 21:51 KST",
+		},
+		{
+			// empty string should fail
+			input: "",
+			err:   true,
+		},
+		{
+			// if it doesn't contain datetime, err
+			input: "이번 미팅은 에 하겠습니다",
+			err:   true,
+		},
+		{
+			input:    "ㄴㅇ이ㄱ자ㅂㄴㅇㅣㅇㅂ자ㅇㄴㅇㅣㅂ자 2019-01-04 21:52 PST",
+			expected: "2019-01-04 21:52 PST",
+		},
+	}
+
+	for _, testCase := range testCases {
+		output, err := ExtractDateTime(testCase.input)
+
+		switch testCase.err {
+
+		case true:
+
+			if err == nil {
+
+				// "should fail" case but succeeded
+				t.Fatalf(`
+test should fail but did not return error
+
+Input:
+	%v
+`, testCase.input)
+			}
+
+		case false:
+
+			if err != nil {
+				// "success" case but failed
+				t.Fatalf(`
+test should not fail but failed
+
+Input:
+	%v
+Error:
+	%v
+`, testCase.input, err)
+
+			}
+
+			if output != testCase.expected {
+				// output was wrong
+				t.Fatalf(`
+Expected:
+	%v
+Received:
+	%v
+`, testCase.expected, output)
+
+			}
+		}
+
+	}
+}
