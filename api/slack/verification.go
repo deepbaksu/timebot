@@ -1,15 +1,41 @@
 package slack
 
-import "net/http"
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+	"io/ioutil"
+	"log"
+	"net/http"
+)
+
+// checkMAC reports whether messageMAC is a valid HMAC tag for message.
+func checkMAC(message, receivedMAC string, key []byte) bool {
+	mac := hmac.New(sha256.New, key)
+	if _, err := mac.Write([]byte(message)); err != nil {
+		log.Printf("mac.Write(%v) failed\n", message)
+		return false
+	}
+	calculatedMAC := "v0=" + hex.EncodeToString(mac.Sum(nil))
+
+	return calculatedMAC == receivedMAC
+}
 
 // Verify verifies the request is coming from Slack
 //
 // Read https://api.slack.com/docs/verifying-requests-from-slack
-func Verify(slackSigningToken, body []byte, timestamp int64, expectedHex []byte) bool {
-	return false
+func Verify(slackSigningToken []byte, timestamp, body, receivedMAC string) bool {
+	message := "v0:" + timestamp + ":" + body
+	return checkMAC(message, receivedMAC, slackSigningToken)
 }
 
 // VerifyRequest is a wrapper around `Verify`
 func VerifyRequest(req *http.Request, slackSigningToken []byte) bool {
-	return false
+	ts := req.Header.Get("X-Slack-Request-Timestamp")
+	bCopy, _ := req.GetBody()
+	b, _ := ioutil.ReadAll(bCopy)
+	bString := string(b)
+	eh := req.Header.Get("X-Slack-Signature")
+
+	return Verify(slackSigningToken, ts, bString, eh)
 }
