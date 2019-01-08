@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -11,7 +12,9 @@ import (
 // CheckMAC reports whether messageMAC is a valid HMAC tag for message.
 func CheckMAC(message, receivedMAC string, key []byte) bool {
 	mac := hmac.New(sha256.New, key)
-	mac.Write([]byte(message))
+	if _, err := mac.Write([]byte(message)); err != nil {
+		fmt.Println("mac.Write error")
+	}
 	calculatedMAC := "v0=" + hex.EncodeToString(mac.Sum(nil))
 
 	return calculatedMAC == receivedMAC
