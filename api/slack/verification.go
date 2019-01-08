@@ -10,7 +10,7 @@ import (
 )
 
 // CheckMAC reports whether messageMAC is a valid HMAC tag for message.
-func CheckMAC(message, receivedMAC string, key []byte) bool {
+func checkMAC(message, receivedMAC string, key []byte) bool {
 	mac := hmac.New(sha256.New, key)
 	if _, err := mac.Write([]byte(message)); err != nil {
 		fmt.Println("mac.Write error")
