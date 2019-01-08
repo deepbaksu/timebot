@@ -15,3 +15,12 @@ type Response struct {
 	Text         string       `json:"text"`
 	ResponseType ResponseType `json:"response_type,omitempty"`
 }
+
+// EventChallenge is the first event sent when registering the app
+//
+// The app should return challenge right away
+type EventChallenge struct {
+	Token     string `json:"token"`
+	Challenge string `json:"challenge"`
+	Type      string `json:"type"`
+}
