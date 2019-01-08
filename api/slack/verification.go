@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-// CheckMAC reports whether messageMAC is a valid HMAC tag for message.
+// checkMAC reports whether messageMAC is a valid HMAC tag for message.
 func checkMAC(message, receivedMAC string, key []byte) bool {
 	mac := hmac.New(sha256.New, key)
 	if _, err := mac.Write([]byte(message)); err != nil {
@@ -26,7 +26,7 @@ func checkMAC(message, receivedMAC string, key []byte) bool {
 // Read https://api.slack.com/docs/verifying-requests-from-slack
 func Verify(slackSigningToken []byte, timestamp, body, receivedMAC string) bool {
 	message := "v0:" + timestamp + ":" + body
-	return CheckMAC(message, receivedMAC, slackSigningToken)
+	return checkMAC(message, receivedMAC, slackSigningToken)
 }
 
 // VerifyRequest is a wrapper around `Verify`
