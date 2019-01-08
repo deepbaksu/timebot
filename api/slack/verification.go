@@ -13,7 +13,8 @@ import (
 func checkMAC(message, receivedMAC string, key []byte) bool {
 	mac := hmac.New(sha256.New, key)
 	if _, err := mac.Write([]byte(message)); err != nil {
-		fmt.Println("mac.Write error")
+		log.Printf("mac.Write(%v) failed\n", message)
+		return false
 	}
 	calculatedMAC := "v0=" + hex.EncodeToString(mac.Sum(nil))
 
