@@ -1,6 +1,7 @@
 package slack
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -18,7 +19,7 @@ func checkMAC(message, receivedMAC string, key []byte) bool {
 	}
 	calculatedMAC := "v0=" + hex.EncodeToString(mac.Sum(nil))
 
-	return calculatedMAC == receivedMAC
+	return hmac.Equal([]byte(calculatedMAC), []byte(receivedMAC))
 }
 
 // Verify verifies the request is coming from Slack
@@ -31,10 +32,15 @@ func Verify(slackSigningToken []byte, timestamp, body, receivedMAC string) bool 
 
 // VerifyRequest is a wrapper around `Verify`
 func VerifyRequest(req *http.Request, slackSigningToken []byte) bool {
+	// do not consume req.body
+	var bodyBytes []byte
+	if req.Body != nil {
+		bodyBytes, _ = ioutil.ReadAll(req.Body)
+	}
+	req.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+	bString := string(bodyBytes)
 	ts := req.Header.Get("X-Slack-Request-Timestamp")
-	bCopy, _ := req.GetBody()
-	b, _ := ioutil.ReadAll(bCopy)
-	bString := string(b)
 	eh := req.Header.Get("X-Slack-Signature")
 
 	return Verify(slackSigningToken, ts, bString, eh)
