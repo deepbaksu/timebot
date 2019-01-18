@@ -10,10 +10,12 @@ import (
 )
 
 // GetRouter returns a root router for everything
-func GetRouter() *mux.Router {
+func GetRouter(slackSigningToken string) *mux.Router {
+	app := slack.New(slackSigningToken)
+
 	r := mux.NewRouter()
 	r.HandleFunc("/healthcheck", healthcheckHandler).Methods("GET")
-	r.HandleFunc("/api/slack/command", slack.CommandHandler).Methods("POST")
+	r.HandleFunc("/api/slack/command", app.CommandHandler).Methods("POST")
 	return r
 }
 
