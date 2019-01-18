@@ -17,8 +17,10 @@ func TestBasicRequest(t *testing.T) {
 		t.Fatal("Failed to build a request")
 	}
 
+	app := New("")
+
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(CommandHandler)
+	handler := http.HandlerFunc(app.CommandHandler)
 
 	handler.ServeHTTP(rr, req)
 
@@ -55,10 +57,12 @@ func TestBadRequest(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/slack/command", nil)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
+	app := New("")
+
 	for _, testCase := range testCases {
 		req = testCase.request
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(CommandHandler)
+		handler := http.HandlerFunc(app.CommandHandler)
 
 		handler.ServeHTTP(rr, req)
 
@@ -74,8 +78,10 @@ func TestInvalidDateFormat(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/slack/command", bytes.NewBufferString(body))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
+	app := New("")
+
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(CommandHandler)
+	handler := http.HandlerFunc(app.CommandHandler)
 
 	handler.ServeHTTP(rr, req)
 
