@@ -15,7 +15,10 @@ func GetRouter(slackSigningToken string) *mux.Router {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/healthcheck", healthcheckHandler).Methods("GET")
+	// Handles a slash command "/time 2019-01-01 PST"
 	r.HandleFunc("/api/slack/command", app.CommandHandler).Methods("POST")
+	// Handles Slack Event Subscription
+	r.HandleFunc("/api/slack/event", app.EventHandler).Methods("POST")
 	return r
 }
 

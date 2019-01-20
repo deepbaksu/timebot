@@ -17,7 +17,8 @@ func TestBasicRequest(t *testing.T) {
 		t.Fatal("Failed to build a request")
 	}
 
-	app := New("")
+	app := New("abc")
+	app.TestMode = true
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(app.CommandHandler)
@@ -58,6 +59,7 @@ func TestBadRequest(t *testing.T) {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	app := New("")
+	app.TestMode = true
 
 	for _, testCase := range testCases {
 		req = testCase.request
@@ -79,6 +81,7 @@ func TestInvalidDateFormat(t *testing.T) {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	app := New("")
+	app.TestMode = true
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(app.CommandHandler)

@@ -17,16 +17,12 @@ import (
 // /time 2018-12-31 21:40 PST
 // => 2019-01-01 14:40 KST
 func (app *App) CommandHandler(w http.ResponseWriter, r *http.Request) {
-	slackSigningToken := app.SigningToken
 
-	if slackSigningToken == "" {
-		log.Printf("$SLACK_SIGNING_SECRET must be set")
-	} else if ok := VerifyRequest(r, []byte(slackSigningToken)); !ok {
+	if !app.TestMode && !VerifyRequest(r, []byte(app.SigningToken)) {
 		log.Printf("Slack signature not verifed")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	log.Printf("Slack signature verifed")
 
 	err := r.ParseForm()
 

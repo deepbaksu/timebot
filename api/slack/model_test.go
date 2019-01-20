@@ -44,6 +44,7 @@ func TestResponseModelMarshall(t *testing.T) {
 }
 
 func TestEventChallengeMarshallAndUnmarshal(t *testing.T) {
+	// nolint gosec
 	Token := "Jhj5dZrVaK7ZwHHjRyZWjbDl"
 	Challenge := "3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P"
 	Type := "url_verification"
