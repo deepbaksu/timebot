@@ -9,6 +9,9 @@ import (
 	"testing"
 )
 
+// nolint gochecknoglobals
+var app App = New("abc", "")
+
 func TestBasicRequest(t *testing.T) {
 	body := url.Values{"text": {"2018-12-31 22:19 PST"}}.Encode()
 	req, err := http.NewRequest("POST", "/api/slack/command", bytes.NewBufferString(body))
@@ -17,7 +20,6 @@ func TestBasicRequest(t *testing.T) {
 		t.Fatal("Failed to build a request")
 	}
 
-	app := New("abc")
 	app.TestMode = true
 
 	rr := httptest.NewRecorder()
@@ -58,7 +60,6 @@ func TestBadRequest(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/slack/command", nil)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	app := New("")
 	app.TestMode = true
 
 	for _, testCase := range testCases {
@@ -80,7 +81,6 @@ func TestInvalidDateFormat(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/slack/command", bytes.NewBufferString(body))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	app := New("")
 	app.TestMode = true
 
 	rr := httptest.NewRecorder()
