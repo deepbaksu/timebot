@@ -2,6 +2,8 @@ package slack
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -39,4 +41,90 @@ func TestResponseModelMarshall(t *testing.T) {
 		}
 	}
 
+}
+
+func TestEventChallengeMarshallAndUnmarshal(t *testing.T) {
+	// nolint gosec
+	Token := "Jhj5dZrVaK7ZwHHjRyZWjbDl"
+	Challenge := "3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P"
+	Type := "url_verification"
+
+	eventChallenge := EventChallenge{
+		Token,
+		Challenge,
+		Type,
+	}
+
+	j, err := json.Marshal(eventChallenge)
+
+	if err != nil {
+		t.Fatalf("json.Marshal(%v) returned err: %v", eventChallenge, err)
+	}
+
+	expected := fmt.Sprintf(`{"token":"%s","challenge":"%s","type":"%s"}`, Token, Challenge, Type)
+
+	if string(j) != expected {
+		t.Fatalf(`
+Expected:
+	%s
+Received:
+	%s\n`, expected, j)
+	}
+
+	var e EventChallenge
+	err = json.Unmarshal([]byte(expected), &e)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal:\n%s", expected)
+	}
+
+	if !reflect.DeepEqual(e, eventChallenge) {
+		t.Fatalf(`
+Expected:
+	%v
+Received:
+	%v
+`, eventChallenge, e)
+	}
+
+}
+
+func TestEventMessageMarshalAndUnmarshal(t *testing.T) {
+	// Test 1: Unmarshal EventMessage
+	// nolint lll
+	input := `{"token":"FWQ","team_id":"T8GMXUUFR","api_app_id":"AF5D1NN5D","event":{"type":"message","text":"\/time 2018-01-20 21:00 PST","user":"U8H34MA8P","ts":"1548046691.001000","channel":"CFJEDJQ4T","event_ts":"1548046691.001000","channel_type":"channel"},"type":"event_callback","event_id":"EvFL0DNBRU","event_time":1548046691,"authed_users":["UF95LP3NG"]}`
+
+	var v EventMessage
+	err := json.Unmarshal([]byte(input), &v)
+
+	if err != nil {
+		t.Fatal("Unmarshal should succeed but failed")
+	}
+
+	expected := "/time 2018-01-20 21:00 PST"
+	if v.Event.Text != expected {
+		t.Fatalf(`
+Expected:
+	%v
+Received:
+	%v`, expected, v.Event.Text)
+	}
+
+	// Test 2: Unmarshal Bot's message
+	// v.Event.SubType should be "bot_message"
+	// nolint lll
+	input = `{"token":"FWQ","team_id":"T8GMXUUFR","api_app_id":"AF5D1NN5D","event":{"type":"message","subtype":"bot_message","text":"2018-01-21 14:00 KST","ts":"1548046691.001100","bot_id":"BF3K8FM32","channel":"CFJEDJQ4T","event_ts":"1548046691.001100","channel_type":"channel"},"type":"event_callback","event_id":"EvFHRA6WAC","event_time":1548046691,"authed_users":["UF95LP3NG"]}`
+
+	err = json.Unmarshal([]byte(input), &v)
+
+	if err != nil {
+		t.Fatal("Unmarshal should succeed but failed")
+	}
+
+	if v.Event.SubType != EventMessageSubTypeBotMessage {
+		t.Fatalf(`
+Expected:
+	%v
+Received:
+	%v`, EventMessageSubTypeBotMessage, v.Event.Text)
+	}
 }
