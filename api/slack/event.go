@@ -43,8 +43,12 @@ func (a *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 		return
 
 	default:
+		log.Print("===================================================")
 		log.Printf(`Unknown event type is received:
 %v`, v)
+		log.Printf(`Original Body
+%v`, string(body))
+		log.Print("===================================================")
 		fmt.Fprintf(w, "Unknown Event: %s", v)
 		return
 	}
