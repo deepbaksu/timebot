@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/dl4ab/timebot/timebot"
 )
@@ -99,6 +100,16 @@ func ParseEvent(data []byte) (interface{}, error) {
 }
 
 func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
+	if event.Event.SubType == EventMessageSubTypeBotMessage {
+		// ignore bot message
+		return
+	}
+
+	if strings.HasPrefix(event.Event.Text, "/time") {
+		// Ignore a command message /time 2019-01-21 19:00 PST
+		return
+	}
+
 	date, err := timebot.ExtractDateTime(event.Event.Text)
 
 	if err != nil {
@@ -115,10 +126,19 @@ func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 		return
 	}
 
+	// In order to reply as a thread, we need to find the original TS
+	threadTs := ""
+	if event.Event.ThreadTs != "" {
+		threadTs = event.Event.ThreadTs
+	} else if event.Event.Ts != "" {
+		threadTs = event.Event.Ts
+	}
+
 	message := ChatPostMessage{
-		Token:   token,
-		Channel: event.Event.Channel,
-		Text:    fmt.Sprintf(`%v => %v`, date, flippedDate),
+		Token:    token,
+		Channel:  event.Event.Channel,
+		Text:     fmt.Sprintf(`%v => %v`, date, flippedDate),
+		ThreadTs: threadTs,
 	}
 
 	SendMessage(message)
