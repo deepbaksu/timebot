@@ -6,6 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
+
+	"github.com/dl4ab/timebot/timebot"
 )
 
 // EventHandler responds to the Slack Event
@@ -42,6 +45,12 @@ func (a *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(w.Write([]byte(v.Challenge)))
 		return
 
+	case EventMessage:
+		// send ok right away
+		w.WriteHeader(http.StatusOK)
+		go checkMessageAndPostResponseIfInterested(a.BotOAuthAccessToken, v)
+		return
+
 	default:
 		log.Print("===================================================")
 		log.Printf(`Unknown event type is received:
@@ -70,6 +79,7 @@ func ParseEvent(data []byte) (interface{}, error) {
 	}
 
 	_, ok := anything["challenge"]
+
 	if ok {
 		return EventChallenge{
 			Token:     anything["token"].(string),
@@ -78,5 +88,58 @@ func ParseEvent(data []byte) (interface{}, error) {
 		}, nil
 	}
 
+	value, ok := anything["type"]
+
+	if ok && value == "event_callback" {
+		var event EventMessage
+		err = json.Unmarshal(data, &event)
+		return event, err
+	}
+
 	return anything, err
+}
+
+func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
+	if event.Event.SubType == EventMessageSubTypeBotMessage {
+		// ignore bot message
+		return
+	}
+
+	if strings.HasPrefix(event.Event.Text, "/time") {
+		// Ignore a command message /time 2019-01-21 19:00 PST
+		return
+	}
+
+	date, err := timebot.ExtractDateTime(event.Event.Text)
+
+	if err != nil {
+		// not interested in this message; so ignore
+		return
+	}
+
+	flippedDate, err := timebot.ParseAndFlipTz(date)
+
+	if err != nil {
+		// something not right
+		log.Printf(`timebot.ParseAndFlipTz returned an err:
+%v`, err)
+		return
+	}
+
+	// In order to reply as a thread, we need to find the original TS
+	threadTs := ""
+	if event.Event.ThreadTs != "" {
+		threadTs = event.Event.ThreadTs
+	} else if event.Event.Ts != "" {
+		threadTs = event.Event.Ts
+	}
+
+	message := ChatPostMessage{
+		Token:    token,
+		Channel:  event.Event.Channel,
+		Text:     fmt.Sprintf(`%v => %v`, date, flippedDate),
+		ThreadTs: threadTs,
+	}
+
+	SendMessage(message)
 }

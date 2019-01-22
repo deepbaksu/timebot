@@ -9,6 +9,9 @@ import (
 	"testing"
 )
 
+// nolint gochecknoglobals
+var app App = New("abc", "")
+
 func TestBasicRequest(t *testing.T) {
 	body := url.Values{"text": {"2018-12-31 22:19 PST"}}.Encode()
 	req, err := http.NewRequest("POST", "/api/slack/command", bytes.NewBufferString(body))
@@ -17,7 +20,6 @@ func TestBasicRequest(t *testing.T) {
 		t.Fatal("Failed to build a request")
 	}
 
-	app := New("abc")
 	app.TestMode = true
 
 	rr := httptest.NewRecorder()
@@ -30,7 +32,7 @@ func TestBasicRequest(t *testing.T) {
 		t.Fatalf("Status was not ok: %v", status)
 	}
 
-	expected := `{"text":"2019-01-01 15:19 KST","response_type":"in_channel"}`
+	expected := `{"text":"2019-01-01 15:19 KST","response_type":"ephemeral"}`
 
 	if strings.TrimSpace(rr.Body.String()) != expected {
 		t.Fatalf("\nExpected:\n%s\nReceived:\n%s", expected, rr.Body.String())
@@ -58,7 +60,6 @@ func TestBadRequest(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/slack/command", nil)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	app := New("")
 	app.TestMode = true
 
 	for _, testCase := range testCases {
@@ -80,7 +81,6 @@ func TestInvalidDateFormat(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/slack/command", bytes.NewBufferString(body))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	app := New("")
 	app.TestMode = true
 
 	rr := httptest.NewRecorder()
