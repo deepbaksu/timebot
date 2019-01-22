@@ -32,7 +32,7 @@ func TestBasicRequest(t *testing.T) {
 		t.Fatalf("Status was not ok: %v", status)
 	}
 
-	expected := `{"text":"2019-01-01 15:19 KST","response_type":"in_channel"}`
+	expected := `{"text":"2019-01-01 15:19 KST","response_type":"ephemeral"}`
 
 	if strings.TrimSpace(rr.Body.String()) != expected {
 		t.Fatalf("\nExpected:\n%s\nReceived:\n%s", expected, rr.Body.String())

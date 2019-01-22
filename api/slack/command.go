@@ -47,7 +47,7 @@ func (app *App) CommandHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp := Response{
 		Text:         ret,
-		ResponseType: InChannel,
+		ResponseType: Ephemeral,
 	}
 
 	w.Header().Add("Content-Type", "application/json")
