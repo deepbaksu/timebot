@@ -7,7 +7,7 @@ go:
 # Make sure golangci-lint is vendored.
 before_script:
     # binary will be $GOPATH/bin/golangci-lint
-    - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $GOPATH/bin v1.12.3 && golangci-lint --version
+    - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $GOPATH/bin v1.16.0 && golangci-lint --version
     - go get github.com/mattn/goveralls
 
 # script always runs to completion (set +e). If we have linter issues AND a
