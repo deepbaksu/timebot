@@ -5,28 +5,6 @@ import (
 	"time"
 )
 
-func TestCheckDaylightSavingZone(t *testing.T) {
-	testCases := []struct {
-		input    string
-		expected bool
-	}{
-		{"", true},
-		{"2018-12-30 11:30 KST", true},
-		{"2018-12-30 11:11 PDT", false},
-	}
-
-	for _, testCase := range testCases {
-		output := CheckDaylightSavingZone(testCase.input)
-		if output != testCase.expected {
-			t.Fatalf(`
-Expected
-  %v
-But received
-  %v`, testCase.expected, output)
-		}
-	}
-}
-
 func TestParseTime(t *testing.T) {
 	/////////////////////////////////
 	// TEST CASES
@@ -49,21 +27,25 @@ func TestParseTime(t *testing.T) {
 			ok:       true,
 		},
 		{
-			// PDT = UTC -7
+			// PDT = UTC - 7
 			input:    "2018-08-13 20:00 PDT",
 			expected: time.Date(2018, 8, 13, 20+7, 0, 0, 0, time.UTC),
 			ok:       true,
 		},
 		{
 			// Test Invalid PST/PDT case
-			// 2018-12-21 19:34 PDT is not a valid date
-			input: "2018-12-21 19:34 PDT",
-			ok:    false,
+			// 2018-12-21 19:34 PDT is actually in PST
+			// PST = UTC - 8
+			input:    "2018-12-21 19:34 PDT",
+			expected: time.Date(2018, 12, 21, 19+8, 34, 0, 0, time.UTC),
+			ok:       true,
 		},
 		{
-			// "2018-08-13 19:34 PST" is not a PST
-			input: "2018-08-13 19:34 PST",
-			ok:    false,
+			// "2018-08-13 19:34 PST" is actually in PDT
+			// PDT = UTC - 7
+			input:    "2018-08-13 19:34 PST",
+			expected: time.Date(2018, 8, 13, 19+7, 34, 0, 0, time.UTC),
+			ok:       true,
 		},
 		{
 			// invalid date should return false
@@ -81,6 +63,7 @@ func TestParseTime(t *testing.T) {
 		case testCase.ok:
 			// test should succeed
 			if !ok || !output.Equal(testCase.expected) {
+				t.Log("Input: ", testCase.input)
 				t.Fatalf("Expected %v But received %v", testCase.expected, output)
 			}
 
@@ -125,15 +108,17 @@ func TestParseAndFlipTz(t *testing.T) {
 		},
 		{
 			// Test Invalid PST/PDT case
-			// 2018-12-21 19:34 PDT is not a valid date
-			input: "2018-12-21 19:34 PDT",
-			ok:    false,
+			// 2018-12-21 19:34 PDT is actually PST but considered valid
+			input:    "2018-12-21 19:34 PDT",
+			expected: "2018-12-22 12:34 KST",
+			ok:       true,
 		},
 		{
 
-			// "2018-08-13 19:34 PST" is not a PST
-			input: "2018-08-13 19:34 PST",
-			ok:    false,
+			// "2018-08-13 19:34 PST" is actually PDT but considered valid
+			input:    "2018-08-13 19:34 PST",
+			expected: "2018-08-14 11:34 KST",
+			ok:       true,
 		},
 		{
 			input: "no date time",

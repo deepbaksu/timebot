@@ -5,46 +5,43 @@ package timebot
 import (
 	"errors"
 	"fmt"
+	"log"
 	"regexp"
 	s "strings"
 	"time"
 )
 
-func CheckDaylightSavingZone(text string) (daylightSavingZone bool) {
+//nolint:gochecknoglobals
+var (
+	koTz, _ = time.LoadLocation("Asia/Seoul")
+	caTz, _ = time.LoadLocation("America/Los_Angeles")
+)
 
-	tzDb := map[string]string{
-		"PST": "America/Los_Angeles",
-		"PDT": "America/Los_Angeles",
-	}
+//nolint:gochecknoglobals
+var pstPdt = regexp.MustCompile("PST|PDT")
 
-	tzText := ""
-	for k, v := range tzDb {
-		if s.Contains(text, k) {
-			tzText = v
-		}
-	}
-	if tzText == "" {
-		return true
-	}
-
-	const longForm2 = "2006-01-02 15:04 MST"
-	loc, _ := time.LoadLocation(tzText)
-
-	t, _ := time.ParseInLocation(longForm2, text, loc)
-	tString := t.Format("2006-01-02 15:04 MST")
-
-	return text == tString
-}
-
+// ParseTime parses datetime string to time.Time object
+// It also returns boolean whether parsing was successful
 func ParseTime(text string) (time.Time, bool) {
 
 	tzToTimeGap := map[string]string{
-		"PST": "-0800",
-		"PDT": "-0700",
 		"KST": "+0900",
 	}
 
-	passCheck := CheckDaylightSavingZone(text)
+	log.Println("ParseTime", text)
+	if s.Contains(text, "PST") || s.Contains(text, "PDT") {
+		// (1) remove PST/PDT
+		// (2) parse using timezone object `America/Los_Angeles`
+		const pstpdtForm = "2006-01-02 15:04"
+		text = s.Trim(pstPdt.ReplaceAllString(text, ""), " ")
+		t, err := time.ParseInLocation(pstpdtForm, text, caTz)
+
+		if err != nil {
+			log.Fatalln("Failed to parse PST/PDT: ", err)
+			return t, false
+		}
+		return t.UTC(), true
+	}
 
 	const longForm = "2006-01-02 15:04 -0700"
 
@@ -53,17 +50,13 @@ func ParseTime(text string) (time.Time, bool) {
 	}
 
 	t, err := time.Parse(longForm, text)
-	if err != nil || !passCheck {
+
+	if err != nil {
 		return t, false
 	}
+
 	return t.UTC(), true
 }
-
-//nolint:gochecknoglobals
-var (
-	koTz, _ = time.LoadLocation("Asia/Seoul")
-	caTz, _ = time.LoadLocation("America/Los_Angeles")
-)
 
 // ParseAndFlipTz returns a datetime string but in other TZ
 //
