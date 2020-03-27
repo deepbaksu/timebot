@@ -107,9 +107,8 @@ func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 		return
 	}
 
-	if strings.HasPrefix(event.Event.Text, "/time") {
+	if ok := strings.HasPrefix(event.Event.Text, "/time"); ok {
 		// Ignore a command message /time 2019-01-21 19:00 PST
 		return
 	}
-
 }
