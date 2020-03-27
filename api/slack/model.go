@@ -37,16 +37,33 @@ type EventMessage struct {
 	AuthedUsers []string         `json:"authed_users"`
 }
 
+type BotProfile struct {
+	ID      string `json:"id"`
+	Deleted bool   `json:"deleted"`
+	Name    string `json:"name"`
+	Updated int    `json:"updated"`
+	AppID   string `json:"app_id"`
+	Icons   struct {
+		Image36 string `json:"image_36"`
+		Image48 string `json:"image_48"`
+		Image72 string `json:"image_72"`
+	} `json:"icons"`
+	TeamID string `json:"team_id"`
+}
+
 // EventMessageType holds the information of message type
 type EventMessageType struct {
 	ClientMsgID string `json:"client_msg_id"`
 	Type        string `json:"type"`
 
-	// (e.g. "bot_message")
-	SubType EventMessageSubType `json:"subtype,omitempty"`
-	Text    string              `json:"text"`
-	User    string              `json:"user"`
-	Ts      string              `json:"ts"`
+	Text string `json:"text"`
+	User string `json:"user"`
+	Ts   string `json:"ts"`
+	Team string `json:"team"`
+
+	// Only filled when the message is from a bot.
+	BotID      string      `json:"bot_id"`
+	BotProfile *BotProfile `json:"bot_profile",omitempty`
 
 	// (optional) if this field exists, then it's a thread reply
 	ThreadTs string `json:"thread_ts,omitempty"`
@@ -57,12 +74,3 @@ type EventMessageType struct {
 	EventTs      string `json:"event_ts"`
 	ChannelType  string `json:"channel_type"`
 }
-
-// EventMessageSubType represents a sub type of the message.
-type EventMessageSubType string
-
-const (
-	// EventMessageSubTypeBotMessage is If the message was created by a bot, it
-	// contains a subtype bot_message.
-	EventMessageSubTypeBotMessage EventMessageSubType = "bot_message"
-)

@@ -101,16 +101,15 @@ func ParseEvent(data []byte) (interface{}, error) {
 	return anything, err
 }
 
+// IsBotMessage returns true if event is created by a bot.
+func IsBotMessage(event EventMessage) bool {
+	return len(event.Event.BotID) > 0 || event.Event.BotProfile != nil
+}
+
 // TODO(kkweon): Disabling the bot response while investigating the bug.
 func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
-	if event.Event.SubType == EventMessageSubTypeBotMessage {
+	if IsBotMessage(event) {
 		// ignore bot message
-		return
-	}
-
-	// Ignore if it contains => message.
-	// TODO(kkweon): Replace this with a more proper bot checking algorithm.
-	if strings.Contains(event.Event.Text, "=>") {
 		return
 	}
 
