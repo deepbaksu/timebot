@@ -29,7 +29,7 @@ func (a *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Received body => %v", body)
+	log.Printf("Received body => %v", string(body))
 
 	event, err := ParseEvent(body)
 

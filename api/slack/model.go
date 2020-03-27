@@ -58,8 +58,11 @@ type EventMessageType struct {
 	ChannelType  string `json:"channel_type"`
 }
 
+// EventMessageSubType represents a sub type of the message.
 type EventMessageSubType string
 
 const (
+	// EventMessageSubTypeBotMessage is If the message was created by a bot, it
+	// contains a subtype bot_message.
 	EventMessageSubTypeBotMessage EventMessageSubType = "bot_message"
 )

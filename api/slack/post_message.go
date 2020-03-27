@@ -19,7 +19,7 @@ type ChatPostMessage struct {
 	AsUser      bool          `json:"as_user,omitempty"`
 }
 
-// PostMessage sends to slack
+// SendMessage sends to slack
 //
 // Documentation: https://api.slack.com/methods/chat.postMessage
 func SendMessage(postMessage ChatPostMessage) {
