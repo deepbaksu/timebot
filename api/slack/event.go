@@ -100,6 +100,7 @@ func ParseEvent(data []byte) (interface{}, error) {
 	return anything, err
 }
 
+// TODO(kkweon): Disabling the bot response while investigating the bug.
 func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 	if event.Event.SubType == EventMessageSubTypeBotMessage {
 		// ignore bot message
@@ -111,6 +112,4 @@ func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 		return
 	}
 
-	// TODO(kkweon): Disabling the bot response while investigating the bug.
-	return
 }
