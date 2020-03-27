@@ -109,12 +109,12 @@ func IsBotMessage(event EventMessage) bool {
 // TODO(kkweon): Disabling the bot response while investigating the bug.
 func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 	if IsBotMessage(event) {
-		// ignore bot message
+		log.Print("Ignoring the bot message.")
 		return
 	}
 
 	if ok := strings.HasPrefix(event.Event.Text, "/time"); ok {
-		// Ignore a command message /time 2019-01-21 19:00 PST
+		log.Print("Ignoring the message that begins with /time.")
 		return
 	}
 
@@ -122,6 +122,7 @@ func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 
 	if err != nil {
 		// not interested in this message; so ignore
+		log.Printf("Failed to parse the datetime from the message(%v). See err => %v", event.Event.Text, err)
 		return
 	}
 
