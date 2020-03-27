@@ -5,7 +5,6 @@ before_script:
 - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
   | sh -s -- -b $(go env GOPATH)/bin v1.24.0 && golangci-lint --version
 script:
-- golangci-lint run
 - go test -race -coverprofile=coverage.txt -covermode=atomic ./...
 after_success:
 - bash <(curl -s https://codecov.io/bash)
