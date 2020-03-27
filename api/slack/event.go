@@ -143,5 +143,5 @@ func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 	}
 
   log.Printf("ChatPostMessage is prepared => %v", message)
-  // SendMessage(message)
+  SendMessage(message)
 }
