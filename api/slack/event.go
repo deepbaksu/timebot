@@ -29,6 +29,8 @@ func (a *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("Received body => %v", body)
+
 	event, err := ParseEvent(body)
 
 	if err != nil {
@@ -106,6 +108,12 @@ func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 		return
 	}
 
+	// Ignore if it contains => message.
+	// TODO(kkweon): Replace this with a more proper bot checking algorithm.
+	if strings.Contains(event.Event.Text, "=>") {
+		return
+	}
+
 	if ok := strings.HasPrefix(event.Event.Text, "/time"); ok {
 		// Ignore a command message /time 2019-01-21 19:00 PST
 		return
@@ -142,6 +150,6 @@ func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 		ThreadTs: threadTs,
 	}
 
-  log.Printf("ChatPostMessage is prepared => %v", message)
-  SendMessage(message)
+	log.Printf("ChatPostMessage is prepared => %v", message)
+	SendMessage(message)
 }
