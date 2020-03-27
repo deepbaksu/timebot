@@ -3,7 +3,7 @@ go:
 - 1.x
 before_script:
 - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
-  | sh -s -- -b $(go env GOPATH)/bin v1.22.2 && golangci-lint --version
+  | sh -s -- -b $(go env GOPATH)/bin v1.24.0 && golangci-lint --version
 script:
 - golangci-lint run
 - go test -race -coverprofile=coverage.txt -covermode=atomic ./...
