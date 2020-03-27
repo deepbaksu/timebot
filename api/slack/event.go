@@ -7,8 +7,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-
-	"github.com/dl4ab/timebot/timebot"
 )
 
 // EventHandler responds to the Slack Event
@@ -28,6 +26,9 @@ func (a *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	// Added a log so we can debug in case of a failure.
+	log.Printf("Received a request body => %v", string(body))
 
 	event, err := ParseEvent(body)
 
@@ -110,36 +111,6 @@ func checkMessageAndPostResponseIfInterested(token string, event EventMessage) {
 		return
 	}
 
-	date, err := timebot.ExtractDateTime(event.Event.Text)
-
-	if err != nil {
-		// not interested in this message; so ignore
-		return
-	}
-
-	flippedDate, err := timebot.ParseAndFlipTz(date)
-
-	if err != nil {
-		// something not right
-		log.Printf(`timebot.ParseAndFlipTz returned an err:
-%v`, err)
-		return
-	}
-
-	// In order to reply as a thread, we need to find the original TS
-	threadTs := ""
-	if event.Event.ThreadTs != "" {
-		threadTs = event.Event.ThreadTs
-	} else if event.Event.Ts != "" {
-		threadTs = event.Event.Ts
-	}
-
-	message := ChatPostMessage{
-		Token:    token,
-		Channel:  event.Event.Channel,
-		Text:     fmt.Sprintf(`%v => %v`, date, flippedDate),
-		ThreadTs: threadTs,
-	}
-
-	SendMessage(message)
+	// TODO(kkweon): Disabling the bot response while investigating the bug.
+	return
 }
