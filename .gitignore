@@ -15,3 +15,6 @@
 secret.sh
 /play_ground/*
 coverage.txt
+.idea
+server
+.env

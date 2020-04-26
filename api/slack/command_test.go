@@ -10,7 +10,7 @@ import (
 )
 
 // nolint gochecknoglobals
-var app App = New("abc", "")
+var app App = New("abc", "", "", "")
 
 func TestBasicRequest(t *testing.T) {
 	body := url.Values{"text": {"2018-12-31 22:19 PST"}}.Encode()

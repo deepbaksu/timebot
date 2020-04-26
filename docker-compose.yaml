@@ -1,0 +1,14 @@
+version: "3"
+services:
+  web:
+    build: .
+    command: |
+      /bin/sh -c "./server"
+    environment:
+      - PORT=8080
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+      - SLACK_BOT_OAUTH_TOKEN=${SLACK_BOT_OAUTH_TOKEN}
+      - SLACK_CLIENT_ID=${SLACK_CLIENT_ID}
+      - SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}
+    ports:
+      - 8080:8080

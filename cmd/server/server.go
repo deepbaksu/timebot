@@ -28,8 +28,10 @@ func main() {
 
 	slackToken := mustLookupEnv("SLACK_SIGNING_SECRET")
 	slackBotOAuthToken := mustLookupEnv("SLACK_BOT_OAUTH_TOKEN")
+	slackClientId := mustLookupEnv("SLACK_CLIENT_ID")
+	slackClientSecret := mustLookupEnv("SLACK_CLIENT_SECRET")
 
-	app := slack.New(slackToken, slackBotOAuthToken)
+	app := slack.New(slackToken, slackBotOAuthToken, slackClientId, slackClientSecret)
 
 	log.Printf("[MAIN] The server is running at 0.0.0.0:%v\n", port)
 	log.Println("[MAIN]", http.ListenAndServe(":"+port, api.GetRouter(app)))
