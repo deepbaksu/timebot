@@ -39,7 +39,7 @@ func main() {
 	mongoDbUri := mustLookupEnv("MONGODB_URI")
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDbUri))
+	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDbUri).SetRetryWrites(false))
 	fatalExitIfMongoError(err, mongoDbUri)
 
 	ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
