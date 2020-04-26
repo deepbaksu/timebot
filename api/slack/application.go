@@ -3,6 +3,7 @@ package slack
 import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
+	"os"
 )
 
 type HttpClient interface {
@@ -30,7 +31,7 @@ type App struct {
 }
 
 func (app *App) GetOauthCollection() *mongo.Collection {
-	return app.MongoClient.Database("timebot").Collection("oauth")
+	return app.MongoClient.Database(os.Getenv("MONGODB_DATABASE")).Collection("oauth")
 }
 
 // New creates a slack API application

@@ -11,6 +11,7 @@ services:
       - SLACK_CLIENT_ID=${SLACK_CLIENT_ID}
       - SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}
       - MONGODB_URI=mongodb://root:example@mongo:27017
+      - MONGODB_DATABASE=timebot
     ports:
       - 8080:8080
     depends_on:
