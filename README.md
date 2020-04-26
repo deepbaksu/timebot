@@ -12,12 +12,19 @@ Slack 시간 변환 봇
 
 ## Run the server
 
-```go
+```shell script
 go run cmd/server/server.go
 ```
 
 ## Test
 
-```go
+```shell script
 go test -v ./...
+```
+
+## Integration Test
+
+```shell script
+docker-compose -f docker-compose.yaml -f docker-compose.test.yaml build 
+docker-compose -f docker-compose.yaml -f docker-compose.test.yaml run web
 ```

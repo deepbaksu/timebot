@@ -1,12 +1,17 @@
 package slack
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	slackApi "github.com/slack-go/slack"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/dl4ab/timebot/timebot"
 )
@@ -15,9 +20,9 @@ import (
 //
 // When slack is first connected, it sends "Challenge"
 // we need to return back the challenge code right away to be connected
-func (a *App) EventHandler(w http.ResponseWriter, r *http.Request) {
+func (app *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 
-	if !a.TestMode && !VerifyRequest(r, []byte(a.SigningToken)) {
+	if !app.TestMode && !VerifyRequest(r, []byte(app.SigningToken)) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -50,7 +55,7 @@ func (a *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 	case EventMessage:
 		// send ok right away
 		w.WriteHeader(http.StatusOK)
-		go checkMessageAndPostResponseIfInterested(a.BotOAuthAccessToken, v)
+		go checkMessageAndPostResponseIfInterested(GetTokenFromTeamId(app, v.TeamID), v)
 		return
 
 	default:
@@ -64,6 +69,18 @@ func (a *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+
+func GetTokenFromTeamId(a *App, teamID string) string {
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	one := a.GetOauthCollection().FindOne(ctx, bson.M{"team.id": teamID}, options.FindOne())
+	var oauthV2Response slackApi.OAuthV2Response
+	err := one.Decode(&oauthV2Response)
+	if err != nil {
+		log.Fatalf("Unable to run a Find query in MongoDB. See %v", err)
+	}
+
+	return oauthV2Response.AccessToken
 }
 
 // ParseEvent will try parsing slack events and return the first matching struct

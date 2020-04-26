@@ -17,8 +17,7 @@ func TestEventHandler(t *testing.T) {
 }`
 	req, _ := http.NewRequest("POST", "/api/slack/event", bytes.NewBufferString(body))
 
-	app = New("SLACK_TOKEN", "BOT_OAUTH_TOKEN", "", "")
-	app.TestMode = true
+	app := GetMockApp(&HttpClientImpl{http.DefaultClient})
 
 	handler := http.HandlerFunc(app.EventHandler)
 	rr := httptest.NewRecorder()

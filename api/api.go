@@ -17,6 +17,9 @@ func GetRouter(app slack.App) *mux.Router {
 	r.HandleFunc("/api/slack/command", app.CommandHandler).Methods("POST")
 	// Handles Slack Event Subscription
 	r.HandleFunc("/api/slack/event", app.EventHandler).Methods("POST")
+
+	// Handles Slack Oauth
+	r.HandleFunc("/api/slack/oauth", app.OauthHandler).Methods("GET")
 	return r
 }
 

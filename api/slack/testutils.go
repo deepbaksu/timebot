@@ -1,5 +1,11 @@
 package slack
 
+func GetMockApp(httpClient HttpClient) App {
+	app := New("SLACK_SIGNING_TOKEN", "BOT_ACCESS_TOKEN", "SLACK_CLIENT_ID", "SLACK_CLIENT_SECRET", httpClient, nil)
+	app.TestMode = true
+	return app
+}
+
 // GetBotMessageForTesting returns a mock bot message (JSON).
 func GetBotMessageForTesting() string {
 	return `{

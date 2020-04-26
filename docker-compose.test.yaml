@@ -1,0 +1,14 @@
+version: "3"
+services:
+  web:
+    build: .
+    entrypoint: "go"
+    command:
+      - test
+      - -v
+      - -tags=integration
+      - ./...
+    volumes:
+      - "gopath:/go/pkg/mod"
+volumes:
+  gopath:
