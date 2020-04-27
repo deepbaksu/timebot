@@ -36,11 +36,7 @@ func (app *App) OauthHandler(writer http.ResponseWriter, request *http.Request) 
 
 	// app.MongoClient
 	oauthCollection := app.GetOauthCollection()
-	oAuthV2ResponseInBson, err := bson.Marshal(oAuthV2Response)
-	if err != nil {
-		log.Fatalf("Failed to Marshal oAuthV2Response(%+v). See %v", oAuthV2Response, err)
-	}
-	_, err = oauthCollection.UpdateOne(context.Background(), bson.M{"_id": teamInfo.ID}, bson.M{"$set": oAuthV2ResponseInBson}, options.Update().SetUpsert(true))
+	_, err = oauthCollection.UpdateOne(context.Background(), bson.M{"_id": teamInfo.ID}, bson.M{"$set": oAuthV2Response}, options.Update().SetUpsert(true))
 	if err != nil {
 		log.Fatalf("Failed to upsert OAuthInformation => %v", err)
 	}
