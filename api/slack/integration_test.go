@@ -27,7 +27,7 @@ func Test_GetTokenFromTeamId(t *testing.T) {
 
 	teamID := "T8GMXUUFR"
 	accessToken := "xoxb-test"
-	mockObject := `{ "_id" : "5ea5f78e3c8fad2abc2d18e4",
+	mockObject := `{
 "accesstoken" : "xoxb-test",
 "tokentype" : "bot",
 "scope" : "",
@@ -43,7 +43,7 @@ func Test_GetTokenFromTeamId(t *testing.T) {
 		log.Fatalf("Failed to Unmarshal mockObjectMap. See %v", err)
 	}
 	deleteMockData(t, app, ctx, teamID)
-	_, err = app.GetOauthCollection().UpdateOne(ctx, bson.M{"_id": "5ea5f78e3c8fad2abc2d18e4"}, bson.M{"$set": mockObjectMap}, options.Update().SetUpsert(true))
+	_, err = app.GetOauthCollection().UpdateOne(ctx, bson.M{"_id": teamID}, bson.M{"$set": mockObjectMap}, options.Update().SetUpsert(true))
 	if err != nil {
 		t.Fatalf("Failed to insert a temporary mock data. See %v", err)
 	}
