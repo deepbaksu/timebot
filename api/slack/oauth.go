@@ -40,7 +40,7 @@ func (app *App) OauthHandler(writer http.ResponseWriter, request *http.Request) 
 	if err != nil {
 		log.Fatalf("Failed to Marshal oAuthV2Response(%+v). See %v", oAuthV2Response, err)
 	}
-	_, err = oauthCollection.InsertOne(context.Background(), oAuthV2ResponseInBson, options.InsertOne())
+	_, err = oauthCollection.UpdateOne(context.Background(), bson.M{"team.id": teamInfo.ID}, bson.M{"$set": oAuthV2ResponseInBson}, options.Update().SetUpsert(true))
 	if err != nil {
 		log.Fatalf("Failed to upsert OAuthInformation => %v", err)
 	}

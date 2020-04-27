@@ -77,7 +77,7 @@ func GetTokenFromTeamId(a *App, teamID string) string {
 	var oauthV2Response slackApi.OAuthV2Response
 	err := one.Decode(&oauthV2Response)
 	if err != nil {
-		log.Fatalf("Unable to run a Find query in MongoDB while trying to search a team.id = %v. See %v", teamID, err)
+		log.Printf("Unable to run a Find query in MongoDB while trying to search a team.id = %v. See %v", teamID, err)
 	}
 
 	return oauthV2Response.AccessToken
