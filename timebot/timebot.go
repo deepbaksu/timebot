@@ -78,7 +78,7 @@ func ParseAndFlipTz(text string) (string, error) {
 				return utc.String(), errors.New("fail to ParseTime()")
 			}
 
-			tString := utc.In(tz).Format("2006-01-02 15:04 MST")
+			tString := utc.In(tz).Format("2006-01-02 15:04 MST (Mon)")
 			return tString, nil
 		}
 	}

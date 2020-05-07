@@ -91,33 +91,33 @@ func TestParseAndFlipTz(t *testing.T) {
 		{
 			// Test PDT -> KST
 			input:    "2018-08-13 20:00 PDT",
-			expected: "2018-08-14 12:00 KST",
+			expected: "2018-08-14 12:00 KST (Tue)",
 			ok:       true,
 		},
 		{
 			// Test KST -> PDT
 			input:    "2018-08-14 12:00 KST",
-			expected: "2018-08-13 20:00 PDT",
+			expected: "2018-08-13 20:00 PDT (Mon)",
 			ok:       true,
 		},
 		{
 			// Test KST -> PST
 			input:    "2018-12-21 19:34 PST",
-			expected: "2018-12-22 12:34 KST",
+			expected: "2018-12-22 12:34 KST (Sat)",
 			ok:       true,
 		},
 		{
 			// Test Invalid PST/PDT case
 			// 2018-12-21 19:34 PDT is actually PST but considered valid
 			input:    "2018-12-21 19:34 PDT",
-			expected: "2018-12-22 12:34 KST",
+			expected: "2018-12-22 12:34 KST (Sat)",
 			ok:       true,
 		},
 		{
 
 			// "2018-08-13 19:34 PST" is actually PDT but considered valid
 			input:    "2018-08-13 19:34 PST",
-			expected: "2018-08-14 11:34 KST",
+			expected: "2018-08-14 11:34 KST (Tue)",
 			ok:       true,
 		},
 		{
