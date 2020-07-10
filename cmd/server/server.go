@@ -2,13 +2,17 @@ package main
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 
 	"github.com/dl4ab/timebot/api"
 	"github.com/dl4ab/timebot/api/slack"
@@ -22,6 +26,32 @@ func mustLookupEnv(env string) string {
 	}
 
 	return ret
+}
+
+// mongodb+srv://timebot-user:password@timebot.rgpco.gcp.mongodb.net/oauth_users
+func obsfucate(mongoDbUri string) string {
+	split := strings.Split(mongoDbUri, "://")
+
+	if len(split) < 2 {
+		return mongoDbUri
+	}
+
+	protocol := split[0]
+	rest := split[1]
+
+	split = strings.Split(rest, "@")
+
+	if len(split) < 2 {
+		return mongoDbUri
+	}
+
+	usernameAndPassword := split[0]
+	rest = split[1]
+
+	split = strings.Split(usernameAndPassword, ":")
+	username := split[0]
+
+	return fmt.Sprintf("%s://%s:xxxxxx@%s", protocol, username, rest)
 }
 
 func main() {
@@ -38,11 +68,15 @@ func main() {
 
 	mongoDbUri := mustLookupEnv("MONGODB_URI")
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDbUri).SetRetryWrites(false))
+	log.Printf("connecting to MONGODB_URI = %s", obsfucate(mongoDbUri))
+
+	ctx, cancel1 := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel1()
+	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDbUri).SetRetryWrites(false).SetWriteConcern(writeconcern.New(writeconcern.WMajority())))
 	fatalExitIfMongoError(err, mongoDbUri)
 
-	ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel2 := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel2()
 	err = mongoClient.Ping(ctx, readpref.Primary())
 	fatalExitIfMongoError(err, mongoDbUri)
 
