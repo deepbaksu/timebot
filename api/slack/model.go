@@ -63,7 +63,7 @@ type EventMessageType struct {
 
 	// Only filled when the message is from a bot.
 	BotID      string      `json:"bot_id"`
-	BotProfile *BotProfile `json:"bot_profile",omitempty`
+	BotProfile *BotProfile `json:"bot_profile,omitempty"`
 
 	// (optional) if this field exists, then it's a thread reply
 	ThreadTs string `json:"thread_ts,omitempty"`

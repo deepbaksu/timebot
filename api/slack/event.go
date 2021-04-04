@@ -72,7 +72,8 @@ func (app *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTokenFromTeamId(a *App, teamID string) string {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	one := a.GetOauthCollection().FindOne(ctx, bson.M{"_id": teamID}, options.FindOne())
 	var oauthV2Response slackApi.OAuthV2Response
 	err := one.Decode(&oauthV2Response)
