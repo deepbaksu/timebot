@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dl4ab/timebot/timebot"
+	"github.com/deepbaksu/timebot/timebot"
 )
 
 // EventHandler responds to the Slack Event

@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/dl4ab/timebot/api/slack"
+	"github.com/deepbaksu/timebot/api/slack"
 )
 
 // GetRouter returns a root router for everything

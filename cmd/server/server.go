@@ -14,8 +14,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 
-	"github.com/dl4ab/timebot/api"
-	"github.com/dl4ab/timebot/api/slack"
+	"github.com/deepbaksu/timebot/api"
+	"github.com/deepbaksu/timebot/api/slack"
 )
 
 func mustLookupEnv(env string) string {

@@ -15,7 +15,7 @@ import (
 )
 
 func Test_GetTokenFromTeamId(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second * 10)
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_URI")))
 
 	if err != nil {

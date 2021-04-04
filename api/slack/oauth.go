@@ -41,4 +41,3 @@ func (app *App) OauthHandler(writer http.ResponseWriter, request *http.Request) 
 		log.Fatalf("Failed to upsert OAuthInformation => %v", err)
 	}
 }
-

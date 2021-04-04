@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dl4ab/timebot/timebot"
+	"github.com/deepbaksu/timebot/timebot"
 )
 
 // CommandHandler handles slack slash command
