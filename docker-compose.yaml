@@ -13,11 +13,11 @@ services:
       - MONGODB_URI=mongodb://root:example@mongo:27017
       - MONGODB_DATABASE=timebot
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - mongo
   mongo:
-    image: mongo:4.2.6
+    image: mongo:latest
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
