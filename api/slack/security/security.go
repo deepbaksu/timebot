@@ -1,10 +1,11 @@
-package slack
+package security
 
 import (
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/deepbaksu/timebot/config"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -30,8 +31,12 @@ func verify(slackSigningToken []byte, timestamp, body, receivedMAC string) bool 
 	return checkMAC(message, receivedMAC, slackSigningToken)
 }
 
-// VerifyRequest is a wrapper around `verify`
-func VerifyRequest(req *http.Request, slackSigningToken []byte) bool {
+type Security struct {
+	config *config.Config
+}
+
+// Verify is a wrapper around `verify`
+func (s *Security) Verify(req *http.Request) bool {
 	// do not consume req.body
 	var bodyBytes []byte
 	if req.Body != nil {
@@ -43,5 +48,9 @@ func VerifyRequest(req *http.Request, slackSigningToken []byte) bool {
 	ts := req.Header.Get("X-Slack-Request-Timestamp")
 	eh := req.Header.Get("X-Slack-Signature")
 
-	return verify(slackSigningToken, ts, bString, eh)
+	return verify([]byte(s.config.SlackToken), ts, bString, eh)
+}
+
+func ProvideSecurityService(cfg *config.Config) *Security {
+	return &Security{cfg}
 }

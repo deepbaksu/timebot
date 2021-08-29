@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package slack
@@ -9,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -22,8 +24,7 @@ func Test_GetTokenFromTeamId(t *testing.T) {
 		t.Fatalf("Failed to connect to a MongoDB for testing. See %v", err)
 	}
 
-	app := GetMockApp(nil)
-	app.MongoClient = client
+	app := ProvideTestApp(http.DefaultClient, client)
 
 	teamID := "T8GMXUUFR"
 	accessToken := "xoxb-test"

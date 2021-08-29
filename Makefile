@@ -15,3 +15,12 @@ build-docker: ## Build a docker
 .PHONY: prettier
 prettier: ## Run prettier format against YAML, JSON files.
 	prettier --write .
+
+.PHONY: wire
+wire: ## Run wire to generate DI
+	wire ./...
+
+
+.PHONY: test
+test: wire
+	go test -v ./...

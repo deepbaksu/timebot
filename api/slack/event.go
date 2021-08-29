@@ -16,13 +16,13 @@ import (
 	"github.com/deepbaksu/timebot/timebot"
 )
 
-// EventHandler responds to the Slack Event
+// EventHandler responds to the Slack Event.
 //
-// When slack is first connected, it sends "Challenge"
-// we need to return back the challenge code right away to be connected
+// When Slack is first connected, it sends "Challenge".
+// We need to return the challenge code right away to be connected.
 func (app *App) EventHandler(w http.ResponseWriter, r *http.Request) {
 
-	if !app.TestMode && !VerifyRequest(r, []byte(app.SigningToken)) {
+	if !app.slackRequestVerifier.Verify(r) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

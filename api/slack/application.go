@@ -1,51 +1,36 @@
 package slack
 
 import (
+	"github.com/deepbaksu/timebot/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
-	"os"
 )
 
 type HttpClient interface {
 	Do(*http.Request) (*http.Response, error)
 }
 
-type HttpClientImpl struct {
-	Client *http.Client
-}
-
-func (c *HttpClientImpl) Do(r *http.Request) (*http.Response, error) {
-	return c.Client.Do(r)
+type SlackRequestVerifier interface {
+	Verify(r *http.Request) bool
 }
 
 // App manages Global Application State
 type App struct {
-	SigningToken        string
-	BotOAuthAccessToken string
-	SlackClientId       string
-	SlackClientSecret   string
-	HttpClient          HttpClient
-	// if it's true, the request verification does not happen
-	TestMode    bool
-	MongoClient *mongo.Client
+	HttpClient           HttpClient
+	MongoClient          *mongo.Client
+	config               *config.Config
+	slackRequestVerifier SlackRequestVerifier
 }
 
 func (app *App) GetOauthCollection() *mongo.Collection {
-	return app.MongoClient.Database(os.Getenv("MONGODB_DATABASE")).Collection("oauth")
+	return app.MongoClient.Database(app.config.MongoDBDATABASE).Collection("oauth")
 }
 
-// New creates a slack API application
-func New(slackSigningToken, botOAuthAccessToken, slackClientId, slackClientSecret string, httpClient HttpClient, mongoClient *mongo.Client) App {
-
-	return App{
-		SigningToken:        slackSigningToken,
-		BotOAuthAccessToken: botOAuthAccessToken,
-
-		SlackClientId:     slackClientId,
-		SlackClientSecret: slackClientSecret,
-		HttpClient:        httpClient,
-		MongoClient:       mongoClient,
-
-		TestMode: false,
+func ProvideSlackApp(config *config.Config, httpClient HttpClient, mongoClient *mongo.Client, verifier SlackRequestVerifier) *App {
+	return &App{
+		HttpClient:           httpClient,
+		MongoClient:          mongoClient,
+		config:               config,
+		slackRequestVerifier: verifier,
 	}
 }

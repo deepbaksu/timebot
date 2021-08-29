@@ -18,7 +18,7 @@ import (
 // => 2019-01-01 14:40 KST
 func (app *App) CommandHandler(w http.ResponseWriter, r *http.Request) {
 
-	if !app.TestMode && !VerifyRequest(r, []byte(app.SigningToken)) {
+	if !app.slackRequestVerifier.Verify(r) {
 		log.Printf("Slack signature not verifed")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
