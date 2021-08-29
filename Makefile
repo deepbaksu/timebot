@@ -12,7 +12,6 @@ test-integration: build-docker ## Run integration tests
 build-docker: ## Build a docker
 	docker-compose -f docker-compose.yaml -f docker-compose.test.yaml build
 
-
 .PHONY: prettier
 prettier: ## Run prettier format against YAML, JSON files.
 	prettier --write .
