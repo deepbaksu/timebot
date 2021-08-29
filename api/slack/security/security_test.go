@@ -1,7 +1,8 @@
-package slack
+package security
 
 import (
 	"bytes"
+	"github.com/deepbaksu/timebot/config"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -26,9 +27,12 @@ func TestVerifyRequest(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/doesn'tmatter", body)
 	req.Header.Add("X-Slack-Request-Timestamp", "1531420618")
 	req.Header.Add("X-Slack-Signature", "v0=a2114d57b48eac39b9ad189dd8316235a7b4a8d21a10bd27519666489c69b503")
-	slackSigningToken := []byte("8f742231b10e8888abcd99yyyzzz85a5")
 
-	if !VerifyRequest(req, slackSigningToken) {
+	security := ProvideSecurityService(&config.Config{
+		SlackToken: "8f742231b10e8888abcd99yyyzzz85a5",
+	})
+
+	if !security.Verify(req) {
 		t.Fatal("Failed to verify with the request object")
 	}
 

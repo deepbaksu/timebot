@@ -18,9 +18,15 @@ prettier: ## Run prettier format against YAML, JSON files.
 
 .PHONY: wire
 wire: ## Run wire to generate DI
-	wire ./...
-
+	wire ./... && make format-go
 
 .PHONY: test
 test: wire
 	go test -v ./...
+
+.PHONY: format-go
+format-go:
+	go fmt ./...
+
+.PHONY: format
+format: prettier format-go
